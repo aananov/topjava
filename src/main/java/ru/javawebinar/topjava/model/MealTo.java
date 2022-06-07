@@ -48,4 +48,8 @@ public class MealTo {
     public boolean isExcess() {
         return excess;
     }
+
+    public Integer getId() {
+        return id;
+    }
 }
