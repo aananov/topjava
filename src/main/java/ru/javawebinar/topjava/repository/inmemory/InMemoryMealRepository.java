@@ -7,12 +7,13 @@ import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Repository
@@ -21,58 +22,62 @@ public class InMemoryMealRepository implements MealRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.meals.forEach(meal -> save(meal, 2));
+        MealsUtil.meals.forEach(meal -> save(meal, 1));
+        MealsUtil.meals.stream().
+                map(meal -> new Meal(meal.getDateTime(), meal.getDescription() + " for Admin", meal.getCalories())).
+                forEach(meal -> save(meal, 2));
     }
 
     @Override
-    public Collection<Meal> getAll(int userId) {
-        try {
-            return repository.get(userId).values().stream().sorted(
-                    Comparator.comparing(Meal::getDateTime).reversed().thenComparing(Meal::getDescription)).collect(Collectors.toList());
-        } catch (Exception e) {
+    public List<Meal> getAll(int userId) {
+        return getFilteredByPredicate(userId, meal -> true);
+    }
+
+    @Override
+    public List<Meal> getAllBetweenDates(int userId, LocalDate startDate, LocalDate endDate) {
+        return getFilteredByPredicate(userId, meal -> DateTimeUtil.isBetweenTwoDates(meal.getDate(), startDate, endDate));
+    }
+
+    private List<Meal> getFilteredByPredicate(int userId, Predicate<Meal> filter) {
+        Map<Integer, Meal> userMeals = repository.get(userId);
+        if (userMeals == null) {
             return Collections.emptyList();
         }
-    }
-
-    @Override
-    public Collection<Meal> getAllBetweenDates(int userID, LocalDate startDate, LocalDate endDate) {
-        return getAll(userID).stream().filter(
-                meal -> DateTimeUtil.isBetweenTwoDates(meal.getDate(), startDate, endDate)).collect(Collectors.toList());
+        return userMeals.values().stream().
+                filter(filter).
+                sorted(Comparator.comparing(Meal::getDateTime).reversed()).
+                collect(Collectors.toList());
     }
 
     @Override
     public Meal get(int id, int userId) {
-        return repository.get(userId) == null ? null : repository.get(userId).get(id);
+        Map<Integer, Meal> userMeals = repository.get(userId);
+        return userMeals == null ? null : userMeals.get(id);
     }
 
     @Override
     public boolean delete(int id, int userId) {
-        if (get(id, userId) == null) {
-            return false;
-        }
-        return repository.get(userId) != null && repository.get(userId).remove(id) != null;
+        Map<Integer, Meal> userMeals = repository.get(userId);
+        return userMeals != null && userMeals.remove(id) != null;
     }
 
     @Override
     public Meal save(Meal meal, int userId) {
+        Map<Integer, Meal> userMeals = repository.get(userId);
+        // ветка сохранения новой еды
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            return addToExistingUserOrCreateNewUserMapping(meal, userId);
+            if (userMeals == null) {
+                userMeals = new ConcurrentHashMap<>();
+                userMeals.put(meal.getId(), meal);
+                repository.put(userId, userMeals);
+            } else {
+                userMeals.put(meal.getId(), meal);
+            }
+            return meal;
         }
-        if (repository.get(userId) == null || !repository.get(userId).containsKey(meal.getId())) return null;
-        return addToExistingUserOrCreateNewUserMapping(meal, userId);
+        // ветка обновления еды
+        return userMeals.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
-
-    private Meal addToExistingUserOrCreateNewUserMapping(Meal meal, int userId) {
-        if (repository.containsKey(userId)) {
-            repository.get(userId).put(meal.getId(), meal);
-        } else {
-            Map<Integer, Meal> newUserMeals = new ConcurrentHashMap<>();
-            newUserMeals.put(meal.getId(), meal);
-            repository.put(userId, newUserMeals);
-        }
-        return meal;
-    }
-
 }
 

@@ -34,10 +34,10 @@
                 <td align="center">До времени (исключая)</td>
             </tr>
             <tr>
-                <td align="center"><input type="date" name="startDate"></td>
-                <td align="center"><input type="date" name="endDate"></td>
-                <td align="center"><input type="time" name="startTime"></td>
-                <td align="center"><input type="time" name="endTime"></td>
+                <td align="center"><input type="date" value="${startDate}" name="startDate"></td>
+                <td align="center"><input type="date" value="${endDate}" name="endDate"></td>
+                <td align="center"><input type="time" value="${startTime}" name="startTime"></td>
+                <td align="center"><input type="time" value="${endTime}" name="endTime"></td>
             </tr>
         </table>
         <button type="submit">Применить</button>
