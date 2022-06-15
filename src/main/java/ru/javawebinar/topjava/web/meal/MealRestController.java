@@ -19,7 +19,7 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 @Controller
 public class MealRestController {
 
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private MealService service;
 
@@ -28,42 +28,39 @@ public class MealRestController {
     }
 
     public List<MealTo> getAll() {
-        log.debug("getAll");
+        log.info("getAll");
         return MealsUtil.getTos(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay());
     }
 
     public List<MealTo> getAllFiltered(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
-        log.debug("getAllFiltered: start d{}, t{} - end d{}, t{}", startDate, startTime, endDate, endTime);
+        log.info("getAllFiltered: start d{}, t{} - end d{}, t{}", startDate, startTime, endDate, endTime);
         startDate = (startDate == null) ? LocalDate.MIN : startDate;
         endDate = (endDate == null) ? LocalDate.MAX : endDate;
         startTime = (startTime == null) ? LocalTime.MIN : startTime;
         endTime = (endTime == null) ? LocalTime.MAX : endTime;
-        return MealsUtil.getFilteredTos(
-                service.getAllBetweenDates(
-                        SecurityUtil.authUserId(), startDate, endDate
-                ), SecurityUtil.authUserCaloriesPerDay(), startTime, endTime);
+        return MealsUtil.getFilteredTos(service.getAllBetweenDates(SecurityUtil.authUserId(),
+                startDate, endDate), SecurityUtil.authUserCaloriesPerDay(), startTime, endTime);
     }
 
     public Meal get(int id) {
-        log.debug("get {}", id);
+        log.info("get {}", id);
         return service.get(id, SecurityUtil.authUserId());
     }
 
     public Meal create(Meal meal) {
-        log.debug("create {}", meal);
+        log.info("create {}", meal);
         checkNew(meal);
         return service.create(meal, SecurityUtil.authUserId());
     }
 
     public void delete(int id) {
-        log.debug("delete {}", id);
+        log.info("delete {}", id);
         service.delete(id, SecurityUtil.authUserId());
     }
 
     public void update(Meal meal, int id) {
-        log.debug("update {} with id={}", meal, id);
+        log.info("update {} with id={}", meal, id);
         assureIdConsistent(meal, id);
         service.update(meal, SecurityUtil.authUserId());
     }
-
 }
