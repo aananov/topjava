@@ -1,7 +1,15 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import org.junit.rules.Stopwatch;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,6 +21,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -26,6 +36,29 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+
+    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
+
+    public static Map<Description, Long> testDetails = new HashMap<>();
+
+    @ClassRule
+    public static ExternalResource er = new ExternalResource() {
+        @Override
+        protected void after() {
+            for (Map.Entry<Description, Long> testData : testDetails.entrySet()) {
+                log.info("{} {}ms", testData.getKey().getMethodName(), testData.getValue() / 1000000);
+            }
+        }
+    };
+
+    @Rule
+    public TestRule testRule = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            log.info("{} {}ms", description.getMethodName(), nanos / 1000000);
+            testDetails.put(description, nanos);
+        }
+    };
 
     @Autowired
     private MealService service;
