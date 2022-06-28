@@ -16,20 +16,16 @@ import java.time.LocalTime;
         @NamedQuery(name = Meal.ALL, query = "SELECT m FROM Meal m WHERE m.user.id =:userId ORDER BY m.dateTime DESC"),
         @NamedQuery(name = Meal.BETWEEN_HALF_OPEN, query = "SELECT m FROM Meal m " +
                 "WHERE m.user.id =:userId and m.dateTime >=:startDateTime and m.dateTime <:endDateTime ORDER BY m.dateTime DESC"),
-        @NamedQuery(name = Meal.UPDATE, query = "UPDATE Meal " +
-                "SET dateTime =:dateTime, description =:description, calories =:calories" +
-                " WHERE id =:id and user.id =:userId"),
 })
 @Entity
 @Table(name = "meals",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date_time" }, name = "meals_unique_user_datetime_idx")})
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date_time"}, name = "meals_unique_user_datetime_idx")})
 public class Meal extends AbstractBaseEntity {
 
     public static final String DELETE = "Meal.delete";
     public static final String BY_ID = "Meal.get";
     public static final String ALL = "Meal.getAll";
     public static final String BETWEEN_HALF_OPEN = "Meal.getBetweenHalfOpen";
-    public static final String UPDATE = "Meal.update";
 
     @Column(name = "date_time", nullable = false)
     @NotNull
