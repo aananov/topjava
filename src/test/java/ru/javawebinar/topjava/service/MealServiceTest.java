@@ -21,8 +21,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -38,16 +37,13 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 public class MealServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
-
-    public static Map<Description, Long> testDetails = new HashMap<>();
+    private static final StringBuffer testDurationData = new StringBuffer();
 
     @ClassRule
     public static ExternalResource er = new ExternalResource() {
         @Override
         protected void after() {
-            for (Map.Entry<Description, Long> testData : testDetails.entrySet()) {
-                log.info("{} {}ms", testData.getKey().getMethodName(), testData.getValue() / 1000000);
-            }
+            log.info("Tests duration:{}", testDurationData);
         }
     };
 
@@ -55,8 +51,9 @@ public class MealServiceTest {
     public TestRule testRule = new Stopwatch() {
         @Override
         protected void finished(long nanos, Description description) {
-            log.info("{} {}ms", description.getMethodName(), nanos / 1000000);
-            testDetails.put(description, nanos);
+            log.info("{} {} ms", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+            testDurationData.append(String.format("\n %-28s %s ms",
+                    description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos)));
         }
     };
 

@@ -28,8 +28,8 @@ public class JpaMealRepository implements MealRepository {
             em.persist(meal);
             return meal;
         } else {
-            Meal previous = this.get(meal.getId(), ref.getId());
-            if (previous == null || previous.getUser().getId() != userId) {
+            Meal previous = this.get(meal.getId(), userId);
+            if (previous == null) {
                 return null;
             }
             return em.merge(meal);
