@@ -1,9 +1,8 @@
-package ru.javawebinar.topjava.service;
+package ru.javawebinar.topjava.service.jdbc;
 
-import org.junit.Ignore;
 import org.springframework.test.context.ActiveProfiles;
+import ru.javawebinar.topjava.service.AbstractUserServiceTest;
 
 @ActiveProfiles("jdbc")
-@Ignore
 public class JdbcUserServiceTest extends AbstractUserServiceTest {
 }
