@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,11 +18,13 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
     @Query("DELETE FROM Meal m WHERE m.id=:id AND m.user.id=:userId")
     int delete(@Param("id") int id, @Param("userId") int userId);
 
-    List<Meal> getAllByUserId(int userId, Sort sort);
+    List<Meal> getAll(@Param("userId") int userId);
 
-    Meal getByIdAndUserId(int id, int userId);
+    @Query("SELECT m FROM Meal m WHERE m.id=:id AND m.user.id=:userId")
+    Meal getById(@Param("id") int id, @Param("userId") int userId);
 
-    List<Meal> getAllByUserIdAndDateTimeGreaterThanEqualAndDateTimeLessThan(int userId, LocalDateTime start, LocalDateTime end, Sort sort);
+    List<Meal> getBetween(@Param("userId") int userId,
+                          @Param("startDateTime") LocalDateTime start, @Param("endDateTime") LocalDateTime end);
 
     @Query("SELECT m FROM Meal m JOIN FETCH m.user WHERE m.id=:id AND m.user.id=:userId")
     Meal getWithUser(@Param("id") int id, @Param("userId") int userId);

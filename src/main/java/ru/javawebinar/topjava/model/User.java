@@ -63,7 +63,7 @@ public class User extends AbstractNamedEntity {
 
     public User(User u) {
         this(u.id, u.name, u.email, u.password, u.caloriesPerDay, u.enabled, u.registered, u.roles);
-        this.meals = u.getMeals() != null ? u.getMeals() : null;
+        this.meals = u.getMeals();
     }
 
     public User(Integer id, String name, String email, String password, Role... roles) {

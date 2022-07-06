@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.util;
+package ru.javawebinar.topjava.repository.jdbc.util;
 
 import java.time.LocalDateTime;
 
