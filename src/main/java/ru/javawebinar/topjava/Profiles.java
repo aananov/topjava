@@ -6,7 +6,10 @@ public class Profiles {
     public static final String
             JDBC = "jdbc",
             JPA = "jpa",
-            DATAJPA = "datajpa";
+            DATAJPA = "datajpa",
+            EH_CACHE = "ehCache",
+            NO_OP_CACHE = "noOpCache",
+            HIBERNATE_CASH_DISABLED = "hibernateCashDisabled";
 
     public static final String REPOSITORY_IMPLEMENTATION = DATAJPA;
 

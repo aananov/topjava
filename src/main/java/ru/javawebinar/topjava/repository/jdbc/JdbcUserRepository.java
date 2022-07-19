@@ -49,9 +49,7 @@ public class JdbcUserRepository implements UserRepository {
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
         int updatedCount;
         List<Role> roles = List.copyOf(user.getRoles());
-//        String sqlUpdate = "UPDATE user_roles SET role=? WHERE user_id=?";
         String sqlDelete = "DELETE FROM topjava.public.user_roles WHERE user_id=?";
-//        String sqlUpsert = "INSERT INTO topjava.public.user_roles VALUES (?,?) ON CONFLICT DO NOTHING";
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
@@ -64,7 +62,6 @@ public class JdbcUserRepository implements UserRepository {
         if (roles != null) {
             batchInsert(roles, user);
         }
-        //TODO make correct return statement
         if (updatedCount > 0) {
             return user;
         } else {
@@ -91,7 +88,6 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public User getByEmail(String email) {
-//        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         List<User> users = jdbcTemplate.query("""
                 SELECT * FROM users u
                 LEFT JOIN (
