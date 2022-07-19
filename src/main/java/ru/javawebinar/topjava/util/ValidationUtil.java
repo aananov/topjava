@@ -2,10 +2,8 @@ package ru.javawebinar.topjava.util;
 
 
 import org.springframework.core.NestedExceptionUtils;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.lang.NonNull;
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
-import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.validation.ConstraintViolation;
@@ -16,16 +14,14 @@ import java.util.Set;
 
 public class ValidationUtil {
 
+    private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
     private ValidationUtil() {
     }
 
-    private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
-
-    private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-
     public static void validate(Object o) {
         Set<ConstraintViolation<Object>> constraintViolations = validator.validate(o);
-        if (constraintViolations.size()>0) {
+        if (constraintViolations.size() > 0) {
             throw new ConstraintViolationException(constraintViolations);
         }
     }

@@ -8,9 +8,9 @@
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
-    <h2><spring:message code="mealForm.${action == 'create' ? 'create': 'edit'}"/></h2>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
-    <form method="post" action="${pageContext.request.contextPath}/meals/update">
+    <h2><spring:message code="mealForm.${meal.id == null ? 'create': 'edit'}"/></h2>
+    <form method="post" action="meals/update">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt><spring:message code="mealForm.dateTime"/>:</dt>

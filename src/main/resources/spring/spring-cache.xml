@@ -8,10 +8,11 @@
          http://www.springframework.org/schema/cache
          http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!-- enables scanning for @Cacheable annotation -->
-    <cache:annotation-driven cache-manager="ehCacheManager"/>
-
     <beans profile="ehCache">
+
+        <!-- enables scanning for @Cacheable annotation -->
+        <cache:annotation-driven cache-manager="ehCacheManager"/>
+
         <!--https://imhoratiu.wordpress.com/2017/01/26/spring-4-with-ehcache-3-how-to/-->
         <bean id="ehCacheManager" class="org.springframework.cache.jcache.JCacheCacheManager">
             <property name="cacheManager">
@@ -28,23 +29,7 @@
     </beans>
 
     <beans profile="hibernateCashDisabled">
-
-        <context:property-override location="classpath:/cache/test.properties"/>
-
-        <!--     no idea why this approach is not working -->
-        <!--    <bean id="cacheProfile" class="ru.javawebinar.topjava.CacheProfile"/>-->
-
-        <!--        <bean id="secondLevelCacheSwitch"-->
-        <!--              class="org.springframework.beans.factory.config.PropertyPathFactoryBean">-->
-        <!--            <property name="targetBeanName" value="cacheProfile"/>-->
-        <!--            <property name="propertyPath" value="SECOND_LEVEL_CACHE_DISABLED"/>-->
-        <!--        </bean>-->
-
-        <!--        <bean id="secondLevelCacheSwitch"-->
-        <!--              class="org.springframework.beans.factory.config.PropertyPathFactoryBean">-->
-        <!--            <property name="targetBeanName" value="cacheProfile"/>-->
-        <!--            <property name="propertyPath" value="SECOND_LEVEL_CACHE_DISABLED"/>-->
-        <!--        </bean>-->
+        <context:property-override location="classpath:/test.properties"/>
 
     </beans>
 

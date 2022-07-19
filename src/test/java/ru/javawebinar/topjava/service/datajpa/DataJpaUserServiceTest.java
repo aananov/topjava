@@ -8,9 +8,9 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.AbstractUserServiceTest;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import static ru.javawebinar.topjava.CacheProfile.HIBERNATE_CASH_DISABLED;
 import static ru.javawebinar.topjava.MealTestData.MEAL_MATCHER;
 import static ru.javawebinar.topjava.Profiles.DATAJPA;
-import static ru.javawebinar.topjava.Profiles.HIBERNATE_CASH_DISABLED;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 @ActiveProfiles({DATAJPA, HIBERNATE_CASH_DISABLED})

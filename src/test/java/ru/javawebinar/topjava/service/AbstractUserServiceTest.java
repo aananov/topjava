@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ActiveProfiles;
-import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertThrows;
-import static ru.javawebinar.topjava.Profiles.NO_OP_CACHE;
+import static ru.javawebinar.topjava.CacheProfile.NO_OP_CACHE;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 @ActiveProfiles(NO_OP_CACHE)
@@ -44,7 +43,6 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     public void delete() {
         service.delete(USER_ID);
         assertThrows(NotFoundException.class, () -> service.get(USER_ID));
-        service.getAll(); // for ehCache disabling
     }
 
     @Test
@@ -54,8 +52,8 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     public void get() {
-        User user = service.get(USER_ID);
-        USER_MATCHER.assertMatch(user, UserTestData.user); // works with admin too user for h2cache check
+        User user = service.get(ADMIN_ID);
+        USER_MATCHER.assertMatch(user, admin);
     }
 
     @Test

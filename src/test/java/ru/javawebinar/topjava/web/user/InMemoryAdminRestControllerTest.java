@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
@@ -23,9 +22,7 @@ public class InMemoryAdminRestControllerTest {
 
     @BeforeClass
     public static void beforeClass() {
-        appCtx = new ClassPathXmlApplicationContext(new String[]{"spring/spring-app.xml", "spring/inmemory.xml"}, false);
-        appCtx.getEnvironment().setActiveProfiles(Profiles.EH_CACHE);
-        appCtx.refresh();
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/inmemory.xml");
         log.info("\n{}\n", Arrays.toString(appCtx.getBeanDefinitionNames()));
         controller = appCtx.getBean(AdminRestController.class);
         repository = appCtx.getBean(InMemoryUserRepository.class);

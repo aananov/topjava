@@ -7,9 +7,7 @@ public class Profiles {
             JDBC = "jdbc",
             JPA = "jpa",
             DATAJPA = "datajpa",
-            EH_CACHE = "ehCache",
-            NO_OP_CACHE = "noOpCache",
-            HIBERNATE_CASH_DISABLED = "hibernateCashDisabled";
+            EH_CACHE = "ehCache";
 
     public static final String REPOSITORY_IMPLEMENTATION = DATAJPA;
 

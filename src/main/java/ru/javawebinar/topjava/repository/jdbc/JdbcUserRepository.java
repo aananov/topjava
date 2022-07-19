@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.repository.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -49,7 +50,7 @@ public class JdbcUserRepository implements UserRepository {
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
         int updatedCount;
         List<Role> roles = List.copyOf(user.getRoles());
-        String sqlDelete = "DELETE FROM topjava.public.user_roles WHERE user_id=?";
+        String sqlDelete = "DELETE FROM user_roles WHERE USER_ID=?";
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
@@ -59,8 +60,12 @@ public class JdbcUserRepository implements UserRepository {
                    registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
                 """, parameterSource);
         jdbcTemplate.update(sqlDelete, user.getId());
-        if (roles != null) {
-            batchInsert(roles, user);
+        if (roles.size() > 0) {
+            try {
+                batchInsert(roles, user);
+            } catch (DataIntegrityViolationException e) {
+                return null;
+            }
         }
         if (updatedCount > 0) {
             return user;
@@ -109,7 +114,7 @@ public class JdbcUserRepository implements UserRepository {
 
     public int[] batchInsert(List<Role> roles, User user) {
         return this.jdbcTemplate.batchUpdate(
-                "INSERT INTO user_roles VALUES (?,?) ON CONFLICT DO NOTHING",
+                "INSERT INTO user_roles VALUES (?,?)",
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
