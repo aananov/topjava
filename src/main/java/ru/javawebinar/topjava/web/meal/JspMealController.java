@@ -1,7 +1,5 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -19,7 +17,6 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 @Controller
 @RequestMapping("/meals")
 public class JspMealController extends AbstractMealController {
-    private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
 
     protected JspMealController(MealService service) {
         super(service);
@@ -27,7 +24,6 @@ public class JspMealController extends AbstractMealController {
 
     @GetMapping
     public String getAll(Model model) {
-        log.info("getAll for user {}", SecurityUtil.authUserId());
         model.addAttribute("meals", getAll());
         return "meals";
     }
@@ -38,8 +34,6 @@ public class JspMealController extends AbstractMealController {
                              @RequestParam String startDate,
                              @RequestParam String endDate
     ) {
-        log.info("getBetween dates({} - {}) time({} - {}) for user {}", parseLocalDate(startDate),
-                parseLocalDate(endDate), parseLocalTime(startTime), parseLocalTime(endTime), SecurityUtil.authUserId());
         model.addAttribute("meals", getBetween(parseLocalDate(startDate),
                 parseLocalTime(startTime), parseLocalDate(endDate), parseLocalTime(endTime)));
         return "meals";
@@ -54,14 +48,12 @@ public class JspMealController extends AbstractMealController {
 
     @GetMapping("/{id}")
     public String get(Model model, @PathVariable Integer id) {
-        log.info("get meal {} for user {}", id, SecurityUtil.authUserId());
         model.addAttribute("meal", get(id));
         return "mealForm";
     }
 
     @GetMapping("/delete/{id}")
-    public String exorcise(@PathVariable int id) {
-        log.info("delete meal {} for user {}", id, SecurityUtil.authUserId());
+    public String deleteProxy(@PathVariable int id) {
         delete(id);
         return "redirect:/meals";
     }
@@ -75,10 +67,8 @@ public class JspMealController extends AbstractMealController {
         Meal meal = new Meal(LocalDateTime.parse(dateTime),
                 description, Integer.parseInt(calories));
         if (StringUtils.hasLength(id)) {
-            log.info("update {} for user {}", meal, SecurityUtil.authUserId());
             update(meal, Integer.parseInt(id));
         } else {
-            log.info("create {} for user {}", meal, SecurityUtil.authUserId());
             create(meal);
         }
         return "redirect:/meals";
