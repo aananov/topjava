@@ -6,7 +6,7 @@ import ru.javawebinar.topjava.util.DateTimeUtil;
 import java.time.LocalTime;
 import java.util.Locale;
 
-public class CustomTimeFormatter implements Formatter<LocalTime> {
+public class TimeFormatter implements Formatter<LocalTime> {
 
     @Override
     public LocalTime parse(String text, Locale locale) {

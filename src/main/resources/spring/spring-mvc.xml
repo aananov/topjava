@@ -27,8 +27,8 @@
           class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
         <property name="formatters">
             <set>
-                <bean class="ru.javawebinar.topjava.util.formatters.CustomDateFormatAnnotationFormatterFactory"/>
-                <bean class="ru.javawebinar.topjava.util.formatters.CustomTimeFormatAnnotationFormatterFactory"/>
+                <bean class="ru.javawebinar.topjava.util.formatters.DateFormatAnnotationFormatterFactory"/>
+                <bean class="ru.javawebinar.topjava.util.formatters.TimeFormatAnnotationFormatterFactory"/>
             </set>
         </property>
     </bean>

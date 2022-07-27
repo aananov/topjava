@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.javawebinar.topjava.MatcherFactory;
 import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
@@ -15,6 +14,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
-import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
+import static ru.javawebinar.topjava.UserTestData.user;
 
 class MealRestControllerTest extends AbstractControllerTest {
 
@@ -55,8 +55,8 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MatcherFactory.usingIgnoringFieldsComparator(MealTo.class).
-                        contentJson(MealsUtil.getTos(meals, DEFAULT_CALORIES_PER_DAY)));
+                .andExpect(MEAL_TO_MATCHER.contentJson(MealsUtil.getTos(meals,
+                        user.getCaloriesPerDay())));
     }
 
     @Test
@@ -87,33 +87,32 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetween() throws Exception {
-        String filterRequest = "filter";
-        perform(MockMvcRequestBuilders.get(MEALS_URL + filterRequest)
+        List<MealTo> filtered = MealsUtil.getFilteredTos(meals, user.getCaloriesPerDay(),
+                LocalTime.parse("10:00:00"), LocalTime.parse("12:15:00"));
+
+        perform(MockMvcRequestBuilders.get(MEALS_URL + "filter")
                 .param("startDate", "2020-01-30")
-                .param("endDate", "2020-01-30")
-                .param("startTime", "09:00:00")
-                .param("endTime", "20:00:00"))
+                .param("endDate", "2021-02-03")
+                .param("startTime", "10:00:00")
+                .param("endTime", "12:15:00"))
 
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MatcherFactory.usingIgnoringFieldsComparator(MealTo.class).
-                        contentJson(MealsUtil.getTos(List.of(meal2, meal1), DEFAULT_CALORIES_PER_DAY)));
+                .andExpect(MEAL_TO_MATCHER.contentJson(filtered));
     }
 
     @Test
     void getBetweenWithNullValues() throws Exception {
-        String filterRequest = "filter";
-        perform(MockMvcRequestBuilders.get(MEALS_URL + filterRequest)
+        perform(MockMvcRequestBuilders.get(MEALS_URL + "filter")
                 .param("startDate", "")
                 .param("endDate", "2020-01-30")
-                .param("startTime", "")
                 .param("endTime", "20:00:00"))
 
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MatcherFactory.usingIgnoringFieldsComparator(MealTo.class).
-                        contentJson(MealsUtil.getTos(List.of(meal2, meal1), DEFAULT_CALORIES_PER_DAY)));
+                .andExpect(MEAL_TO_MATCHER.contentJson(MealsUtil.getTos(List.of(meal2, meal1),
+                        user.getCaloriesPerDay())));
     }
 }

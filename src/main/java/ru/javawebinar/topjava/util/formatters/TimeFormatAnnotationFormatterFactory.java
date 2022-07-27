@@ -8,7 +8,7 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Set;
 
-public class CustomTimeFormatAnnotationFormatterFactory implements AnnotationFormatterFactory<CustomTimeFormat> {
+public class TimeFormatAnnotationFormatterFactory implements AnnotationFormatterFactory<TimeFormat> {
 
     @Override
     public Set<Class<?>> getFieldTypes() {
@@ -16,12 +16,12 @@ public class CustomTimeFormatAnnotationFormatterFactory implements AnnotationFor
     }
 
     @Override
-    public Printer<?> getPrinter(CustomTimeFormat annotation, Class<?> fieldType) {
-        return new CustomTimeFormatter();
+    public Printer<?> getPrinter(TimeFormat annotation, Class<?> fieldType) {
+        return new TimeFormatter();
     }
 
     @Override
-    public Parser<?> getParser(CustomTimeFormat annotation, Class<?> fieldType) {
-        return new CustomTimeFormatter();
+    public Parser<?> getParser(TimeFormat annotation, Class<?> fieldType) {
+        return new TimeFormatter();
     }
 }

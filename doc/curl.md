@@ -1,13 +1,24 @@
-method get:
-curl --location --request GET 'http://localhost:8080/topjava/rest/meals/100003'
+## MealRestController
 
-method getAll:
-curl --location --request GET 'http://localhost:8080/topjava/rest/meals/'
+### curls for tests
 
-method delete:
-curl --location --request DELETE 'http://localhost:8080/topjava/rest/meals/100003'
+_________
 
-method createWithLocation
+#### get:
+
+`curl --location --request GET 'http://localhost:8080/topjava/rest/meals/100003'`
+
+#### getAll:
+
+`curl --location --request GET 'http://localhost:8080/topjava/rest/meals/'`
+
+#### delete:
+
+`curl --location --request DELETE 'http://localhost:8080/topjava/rest/meals/100003'`
+
+#### createWithLocation:
+
+```
 curl --location --request POST 'http://localhost:8080/topjava/rest/meals/' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -16,8 +27,11 @@ curl --location --request POST 'http://localhost:8080/topjava/rest/meals/' \
 "description": "Созданный ужин",
 "calories": 300
 }'
+```
 
-method update:
+#### update:
+
+```
 curl --location --request PUT 'http://localhost:8080/topjava/rest/meals/100003' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -26,7 +40,11 @@ curl --location --request PUT 'http://localhost:8080/topjava/rest/meals/100003' 
 "description": "Обновленный завтрак",
 "calories": 200
 }'
+```
 
-method getBetween:
+#### getBetween:
+
+```
 curl --location --request
-GET 'http://localhost:8080/topjava/rest/meals/filter?startDate=2020-01-30&endDate=2020-01-30&startTime=09:00:00&endTime=20:00:00'
+GET 'http://localhost:8080/topjava/rest/meals/filter?startDate=2020-01-30&endDate=2021-02-03&startTime=10:00:00&endTime=12:15:00'
+```

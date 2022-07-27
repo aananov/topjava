@@ -8,19 +8,19 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Set;
 
-public class CustomDateFormatAnnotationFormatterFactory implements AnnotationFormatterFactory<CustomDateFormat> {
+public class DateFormatAnnotationFormatterFactory implements AnnotationFormatterFactory<DateFormat> {
     @Override
     public Set<Class<?>> getFieldTypes() {
         return Collections.singleton(LocalDate.class);
     }
 
     @Override
-    public Printer<?> getPrinter(CustomDateFormat annotation, Class<?> fieldType) {
-        return new CustomDateFormatter();
+    public Printer<?> getPrinter(DateFormat annotation, Class<?> fieldType) {
+        return new DateFormatter();
     }
 
     @Override
-    public Parser<?> getParser(CustomDateFormat annotation, Class<?> fieldType) {
-        return new CustomDateFormatter();
+    public Parser<?> getParser(DateFormat annotation, Class<?> fieldType) {
+        return new DateFormatter();
     }
 }

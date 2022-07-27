@@ -1,11 +1,11 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.javawebinar.topjava.MatcherFactory;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javawebinar.topjava.MatcherFactory.usingIgnoringFieldsComparator;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.*;
 
@@ -90,12 +89,12 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getWithMeals() throws Exception {
-        ResultActions actions = perform(MockMvcRequestBuilders.get(REST_URL + "/with-meals/" + ADMIN_ID))
+        Assumptions.assumeFalse(!isDataJpa());
+        ResultActions actions = perform(MockMvcRequestBuilders.get(REST_URL + "/" + ADMIN_ID + "/with-meals/"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-        MatcherFactory.Matcher<User> userWithMealsMatcher = usingIgnoringFieldsComparator(User.class, "registered");
-        User adminWithMeals = userWithMealsMatcher.readFromJson(actions);
+        User adminWithMeals = USER_WITH_MEALS_MATCHER.readFromJson(actions);
         USER_MATCHER.assertMatch(adminWithMeals, admin);
         MEAL_MATCHER.assertMatch(adminWithMeals.getMeals(), adminMeal2, adminMeal1);
 

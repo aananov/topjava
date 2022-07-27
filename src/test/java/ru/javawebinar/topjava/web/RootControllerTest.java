@@ -2,9 +2,9 @@ package ru.javawebinar.topjava.web;
 
 import org.assertj.core.matcher.AssertionMatcher;
 import org.junit.jupiter.api.Test;
-import ru.javawebinar.topjava.MatcherFactory;
+import org.springframework.test.web.ModelAndViewAssert;
+import org.springframework.web.servlet.ModelAndView;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.util.List;
@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.javawebinar.topjava.MealTestData.meals;
 import static ru.javawebinar.topjava.UserTestData.*;
-import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
 
 class RootControllerTest extends AbstractControllerTest {
 
@@ -37,19 +36,16 @@ class RootControllerTest extends AbstractControllerTest {
 
     @Test
     void getMeals() throws Exception {
-        perform(get("/meals"))
+        ModelAndView mealsActual = perform(get("/meals"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("meals"))
                 .andExpect(forwardedUrl("/WEB-INF/jsp/meals.jsp"))
-                .andExpect(model().attribute("meals",
-                        new AssertionMatcher<List<MealTo>>() {
-                            @Override
-                            public void assertion(List<MealTo> actual) throws AssertionError {
-                                List<MealTo> expected = MealsUtil.getTos(meals, DEFAULT_CALORIES_PER_DAY);
-                                MatcherFactory.usingIgnoringFieldsComparator(MealTo.class).assertMatch(actual, expected);
-                            }
-                        }
-                ));
+                .andReturn().getModelAndView();
+
+        assert mealsActual != null;
+        ModelAndViewAssert.assertCompareListModelAttribute(mealsActual,
+                "meals", MealsUtil.getTos(meals, user.getCaloriesPerDay()));
+
     }
 }
