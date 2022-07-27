@@ -1,19 +1,20 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.formatters.CustomDateFormat;
+import ru.javawebinar.topjava.util.formatters.CustomTimeFormat;
 
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-
-import static org.springframework.format.annotation.DateTimeFormat.ISO;
 
 @RestController
 @RequestMapping(value = MealRestController.MEALS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -56,17 +57,12 @@ public class MealRestController extends AbstractMealController {
         super.update(meal, id);
     }
 
-    @GetMapping("/filter")
-    public List<MealTo> getBetween(@RequestParam(name = "startDateTime") @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime startDateTime,
-                                   @RequestParam @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime endDateTime) {
-        return super.getBetween(startDateTime.toLocalDate(), startDateTime.toLocalTime(), endDateTime.toLocalDate(), endDateTime.toLocalTime());
-    }
-/*
     @Override
     @GetMapping("/filter")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    public List<MealTo> getBetween(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
+    public List<MealTo> getBetween(@RequestParam @CustomDateFormat @Nullable LocalDate startDate,
+                                   @RequestParam @CustomTimeFormat @Nullable LocalTime startTime,
+                                   @RequestParam @CustomDateFormat @Nullable LocalDate endDate,
+                                   @RequestParam @CustomTimeFormat @Nullable LocalTime endTime) {
         return super.getBetween(startDate, startTime, endDate, endTime);
     }
-    */
 }
