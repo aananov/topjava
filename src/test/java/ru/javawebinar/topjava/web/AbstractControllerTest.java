@@ -35,8 +35,10 @@ public abstract class AbstractControllerTest {
     }
 
     @Autowired
-    Environment en;
+    private Environment env;
+
     private MockMvc mockMvc;
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -53,6 +55,6 @@ public abstract class AbstractControllerTest {
     }
 
     protected boolean isDataJpa() {
-        return en.acceptsProfiles(org.springframework.core.env.Profiles.of(Profiles.DATAJPA));
+        return env.acceptsProfiles(org.springframework.core.env.Profiles.of(Profiles.DATAJPA));
     }
 }

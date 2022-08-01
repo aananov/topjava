@@ -4,19 +4,19 @@
 
 _________
 
-#### get:
+#### get meal 100003 for user:
 
 `curl --location --request GET 'http://localhost:8080/topjava/rest/meals/100003'`
 
-#### getAll:
+#### get all meals for user:
 
 `curl --location --request GET 'http://localhost:8080/topjava/rest/meals/'`
 
-#### delete:
+#### delete meal 100003:
 
 `curl --location --request DELETE 'http://localhost:8080/topjava/rest/meals/100003'`
 
-#### createWithLocation:
+#### create meal for user:
 
 ```
 curl --location --request POST 'http://localhost:8080/topjava/rest/meals/' \
@@ -29,7 +29,7 @@ curl --location --request POST 'http://localhost:8080/topjava/rest/meals/' \
 }'
 ```
 
-#### update:
+#### update meal 100003:
 
 ```
 curl --location --request PUT 'http://localhost:8080/topjava/rest/meals/100003' \
@@ -42,7 +42,7 @@ curl --location --request PUT 'http://localhost:8080/topjava/rest/meals/100003' 
 }'
 ```
 
-#### getBetween:
+#### filter user meals between 2020-01-30T10:00:00 and 2021-02-03T12:15:00
 
 ```
 curl --location --request

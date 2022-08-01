@@ -52,12 +52,12 @@ class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getWithMeals() throws Exception {
-        Assumptions.assumeFalse(!isDataJpa());
+        Assumptions.assumeTrue(isDataJpa());
         ResultActions actions = perform(MockMvcRequestBuilders.get(REST_URL + "/with-meals"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-        User userWithMeals = USER_WITH_MEALS_MATCHER.readFromJson(actions);
+        User userWithMeals = USER_MATCHER.readFromJson(actions);
         USER_MATCHER.assertMatch(userWithMeals, user);
         MEAL_MATCHER.assertMatch(userWithMeals.getMeals(), meals);
 

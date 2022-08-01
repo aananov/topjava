@@ -43,9 +43,12 @@ class RootControllerTest extends AbstractControllerTest {
                 .andExpect(forwardedUrl("/WEB-INF/jsp/meals.jsp"))
                 .andReturn().getModelAndView();
 
-        assert mealsActual != null;
-        ModelAndViewAssert.assertCompareListModelAttribute(mealsActual,
-                "meals", MealsUtil.getTos(meals, user.getCaloriesPerDay()));
+        try {
+            ModelAndViewAssert.assertCompareListModelAttribute(mealsActual,
+                    "meals", MealsUtil.getTos(meals, user.getCaloriesPerDay()));
+        } catch (Exception e) { // NPE expected with null mealsActual
+            throw new RuntimeException(e);
+        }
 
     }
 }

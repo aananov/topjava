@@ -89,12 +89,12 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getWithMeals() throws Exception {
-        Assumptions.assumeFalse(!isDataJpa());
+        Assumptions.assumeTrue(isDataJpa());
         ResultActions actions = perform(MockMvcRequestBuilders.get(REST_URL + "/" + ADMIN_ID + "/with-meals/"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-        User adminWithMeals = USER_WITH_MEALS_MATCHER.readFromJson(actions);
+        User adminWithMeals = USER_MATCHER.readFromJson(actions);
         USER_MATCHER.assertMatch(adminWithMeals, admin);
         MEAL_MATCHER.assertMatch(adminWithMeals.getMeals(), adminMeal2, adminMeal1);
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class MealTo {
     private final Integer id;
@@ -59,21 +60,16 @@ public class MealTo {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        MealTo mealTo = (MealTo) obj;
-        return (id.equals(mealTo.getId()) && dateTime.equals(mealTo.getDateTime())
-                && description.equals(mealTo.getDescription()) && calories == mealTo.getCalories()
-                && excess == mealTo.isExcess());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MealTo)) return false;
+        MealTo mealTo = (MealTo) o;
+        return calories == mealTo.calories && excess == mealTo.excess && Objects.equals(id, mealTo.id)
+                && Objects.equals(dateTime, mealTo.dateTime) && Objects.equals(description, mealTo.description);
     }
 
     @Override
     public int hashCode() {
-        return 31 * toString().length();
+        return Objects.hash(id, dateTime, description, calories, excess);
     }
 }
