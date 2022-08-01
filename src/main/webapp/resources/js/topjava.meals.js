@@ -39,3 +39,17 @@ $(function () {
         })
     );
 });
+
+let filterForm = $('#filter');
+
+function applyFilter() {
+    let params = filterForm.serialize();
+    $.get(mealsAjaxUrl + "filter", params).done(function (data) {
+        ctx.datatableApi.clear().rows.add(data).draw();
+    });
+}
+
+function clearFilter() {
+    updateTable();
+    filterForm.find(":input").val("")
+}
