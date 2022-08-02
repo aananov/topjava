@@ -1,9 +1,17 @@
 const mealsAjaxUrl = "ui/meals/";
 
+let filterForm = $('#filter');
+
 // https://stackoverflow.com/a/5064235/548473
 const ctx = {
-    ajaxUrl: mealsAjaxUrl
-};
+    ajaxUrl: mealsAjaxUrl,
+    updateTable: function () {
+        let params = filterForm.serialize();
+        $.get(mealsAjaxUrl + "filter", params).done(function (data) {
+            ctx.datatableApi.clear().rows.add(data).draw();
+        });
+    }
+}
 
 // $(document).ready(function () {
 $(function () {
@@ -40,8 +48,6 @@ $(function () {
     );
 });
 
-let filterForm = $('#filter');
-
 function applyFilter() {
     let params = filterForm.serialize();
     $.get(mealsAjaxUrl + "filter", params).done(function (data) {
@@ -50,6 +56,6 @@ function applyFilter() {
 }
 
 function clearFilter() {
-    updateTable();
     filterForm.find(":input").val("")
+    ctx.updateTable();
 }

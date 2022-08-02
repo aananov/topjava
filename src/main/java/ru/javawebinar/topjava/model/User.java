@@ -1,10 +1,10 @@
 package ru.javawebinar.topjava.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.util.CollectionUtils;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
@@ -25,6 +25,7 @@ import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
         @NamedQuery(name = User.DELETE, query = "DELETE FROM User u WHERE u.id=:id"),
         @NamedQuery(name = User.BY_EMAIL, query = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email=?1"),
         @NamedQuery(name = User.ALL_SORTED, query = "SELECT u FROM User u ORDER BY u.name, u.email"),
+        @NamedQuery(name = User.ENABLE, query = "UPDATE User u SET u.enabled=:enabled WHERE u.id=:id")
 })
 @Entity
 @Table(name = "users")
@@ -33,6 +34,7 @@ public class User extends AbstractNamedEntity {
     public static final String DELETE = "User.delete";
     public static final String BY_EMAIL = "User.getByEmail";
     public static final String ALL_SORTED = "User.getAllSorted";
+    public static final String ENABLE = "User.enable";
 
     @Column(name = "email", nullable = false, unique = true)
     @Email
@@ -103,20 +105,12 @@ public class User extends AbstractNamedEntity {
         this.email = email;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Date getRegistered() {
         return registered;
     }
 
     public void setRegistered(Date registered) {
         this.registered = registered;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public int getCaloriesPerDay() {
@@ -131,6 +125,10 @@ public class User extends AbstractNamedEntity {
         return enabled;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public Set<Role> getRoles() {
         return roles;
     }
@@ -141,6 +139,10 @@ public class User extends AbstractNamedEntity {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public List<Meal> getMeals() {
