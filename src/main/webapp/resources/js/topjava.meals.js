@@ -48,12 +48,11 @@ $(function () {
 });
 
 function applyFilter() {
-    let params = filterForm.serialize();
-    $.get(mealsAjaxUrl + "filter", params)
-        .done(refreshTableData);
+    ctx.updateTable();
 }
 
 function clearFilter() {
-    filterForm.find(":input").val("")
+    // filterForm.find(":input").val("")
+    $(filterForm)[0].reset();
     ctx.updateTable();
 }
