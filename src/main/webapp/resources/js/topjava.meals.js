@@ -52,7 +52,6 @@ function applyFilter() {
 }
 
 function clearFilter() {
-    // filterForm.find(":input").val("")
     $(filterForm)[0].reset();
-    ctx.updateTable();
+    $.get(ctx.ajaxUrl, refreshTableData);
 }
