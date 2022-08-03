@@ -52,7 +52,7 @@ public class JdbcUserRepository implements UserRepository {
             insertRoles(user);
         } else {
             if (namedParameterJdbcTemplate.update("""
-                       UPDATE users SET name=:name, email=:email, password=:password, 
+                       UPDATE users SET name=:name, email=:email, password=:password,
                        registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
                     """, parameterSource) == 0) {
                 return null;
@@ -74,7 +74,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     @Transactional
-    public boolean enable(int id, boolean enabled) {
+    public boolean enableOrDisable(int id, boolean enabled) {
         return jdbcTemplate.update("UPDATE users SET enabled=? WHERE id=?", enabled, id) != 0;
     }
 

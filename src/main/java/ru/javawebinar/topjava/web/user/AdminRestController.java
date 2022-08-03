@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.User;
 
-import javax.validation.constraints.NotEmpty;
 import java.net.URI;
 import java.util.List;
 
@@ -65,14 +64,7 @@ public class AdminRestController extends AbstractUserController {
 
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void enableOrDisable(@PathVariable int id, @RequestParam @NotEmpty String enabled) {
-        switch (enabled.toLowerCase()) {
-            case "true":
-                super.enableOrDisable(id, true);
-                break;
-            case "false":
-                super.enableOrDisable(id, false);
-                break;
-        }
+    public void enableOrDisable(@PathVariable int id, @RequestParam boolean enabled) {
+        super.enableOrDisable(id, enabled);
     }
 }

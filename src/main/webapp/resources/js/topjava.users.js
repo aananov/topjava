@@ -4,9 +4,7 @@ const userAjaxUrl = "admin/users/";
 const ctx = {
     ajaxUrl: userAjaxUrl,
     updateTable: function () {
-        $.get(ctx.ajaxUrl, function (data) {
-            ctx.datatableApi.clear().rows.add(data).draw();
-        });
+        $.get(ctx.ajaxUrl, refreshTableData);
     }
 }
 
@@ -52,7 +50,8 @@ $(function () {
 });
 
 function enableOrDisable(el) {
-    let userId = $(el).closest('tr').attr("id");
+    let row = $(el).closest('tr');
+    let userId = $(row).attr("id");
     let enabled = el.checked;
     $.ajax({
         type: "POST",
@@ -60,5 +59,8 @@ function enableOrDisable(el) {
         data: {"enabled": enabled}
     }).done(function () {
         successNoty("Saved");
+        $(row).attr("data-user-enabled", enabled);
+    }).fail(function () {
+        $(el).prop("checked", !enabled)
     });
 }

@@ -7,9 +7,8 @@ const ctx = {
     ajaxUrl: mealsAjaxUrl,
     updateTable: function () {
         let params = filterForm.serialize();
-        $.get(mealsAjaxUrl + "filter", params).done(function (data) {
-            ctx.datatableApi.clear().rows.add(data).draw();
-        });
+        $.get(mealsAjaxUrl + "filter", params)
+            .done(refreshTableData);
     }
 }
 
@@ -41,7 +40,7 @@ $(function () {
             "order": [
                 [
                     0,
-                    "asc"
+                    "desc"
                 ]
             ]
         })
@@ -50,9 +49,8 @@ $(function () {
 
 function applyFilter() {
     let params = filterForm.serialize();
-    $.get(mealsAjaxUrl + "filter", params).done(function (data) {
-        ctx.datatableApi.clear().rows.add(data).draw();
-    });
+    $.get(mealsAjaxUrl + "filter", params)
+        .done(refreshTableData);
 }
 
 function clearFilter() {

@@ -39,7 +39,7 @@ public class InMemoryUserRepository extends InMemoryBaseRepository<User> impleme
     }
 
     @Override
-    public boolean enable(int id, boolean enabled) {
+    public boolean enableOrDisable(int id, boolean enabled) {
         User user = super.get(id);
         if (user != null) {
             user.setEnabled(enabled);

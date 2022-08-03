@@ -88,7 +88,7 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     void setDisabled() {
-        service.setEnabled(USER_ID, false);
+        service.enableOrDisable(USER_ID, false);
         USER_MATCHER.assertMatch(service.get(USER_ID), getDisabled());
     }
 }
