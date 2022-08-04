@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.to.EnabledTo;
 
 import java.util.List;
 
@@ -33,10 +34,10 @@ public class AdminUIController extends AbstractUserController {
         super.create(new User(null, name, email, password, Role.USER));
     }
 
-    @Override
-    @PatchMapping("/{id}")
+    //    @Override
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void enableOrDisable(@PathVariable int id, @RequestParam boolean enabled) {
-        super.enableOrDisable(id, enabled);
+    public void enableOrDisable(@PathVariable int id, @RequestBody EnabledTo enabledTo) {
+        super.enableOrDisable(id, enabledTo.isEnabled());
     }
 }

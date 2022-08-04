@@ -54,9 +54,11 @@ function enableOrDisable(el) {
     let userId = $(row).attr("id");
     let enabled = el.checked;
     $.ajax({
-        type: "POST",
+        type: "PATCH",
         url: ctx.ajaxUrl + userId,
-        data: {"enabled": enabled}
+        data: JSON.stringify({"enabled": enabled}),
+        processData: false,
+        contentType: 'application/json'
     }).done(function () {
         successNoty("Saved");
         $(row).attr("data-user-enabled", enabled);
