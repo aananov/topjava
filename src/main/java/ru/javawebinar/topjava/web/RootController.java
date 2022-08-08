@@ -19,7 +19,7 @@ public class RootController {
     @GetMapping("/")
     public String root() {
         log.info("root");
-        return "redirect:meals";
+        return "meals";
     }
 
     @GetMapping("/users")
