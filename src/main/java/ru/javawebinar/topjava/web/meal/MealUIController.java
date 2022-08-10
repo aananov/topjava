@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static ru.javawebinar.topjava.util.ValidationUtil.getBindingErrors;
+import static ru.javawebinar.topjava.util.ValidationUtil.getResponseWithBindingErrors;
 
 @RestController
 @RequestMapping(value = "/profile/meals", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,16 +34,14 @@ public class MealUIController extends AbstractMealController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<String> createOrUpdate(@Valid MealTo mealTo, BindingResult result) {
+    public ResponseEntity<String> createOrUpdate(@Valid Meal meal, BindingResult result) {
         if (result.hasErrors()) {
-            return getBindingErrors(result);
+            return getResponseWithBindingErrors(result);
         }
-        Meal newOrUpdatedMeal = new Meal(mealTo.getId(), mealTo.getDateTime(), mealTo.getDescription(), mealTo.getCalories());
-        if (mealTo.isNew()) {
-            super.create(newOrUpdatedMeal);
+        if (meal.isNew()) {
+            super.create(meal);
         } else {
-            super.update(newOrUpdatedMeal, mealTo.getId());
+            super.update(meal, meal.getId());
         }
         return ResponseEntity.ok().build();
     }
