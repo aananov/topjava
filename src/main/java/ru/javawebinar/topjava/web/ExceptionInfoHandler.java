@@ -19,6 +19,7 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.getErrors;
 import static ru.javawebinar.topjava.util.ValidationUtil.getRootCause;
@@ -32,12 +33,25 @@ public class ExceptionInfoHandler {
     //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
     private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
         Throwable rootCause = getRootCause(e);
+        String errorDetails = rootCause.toString();
         if (logException) {
-            log.error(errorType + " at request " + req.getRequestURL(), rootCause);
+            log.error("{} at request  {}: {}", errorType, req.getRequestURL(), errorDetails);
         } else {
-            log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
+            log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), errorDetails);
         }
-        return new ErrorInfo(req.getRequestURL(), errorType, rootCause.toString());
+        if (e instanceof BindException) {
+            errorDetails = getErrors(((BindException) e).getBindingResult());
+        }
+        if (e instanceof DataIntegrityViolationException) {
+            String message = Objects.requireNonNull(rootCause.getMessage()).toLowerCase();
+            if (message.contains("meals")) {
+                errorDetails = "You already have meal with this date/time";
+            }
+            if (message.contains("email")) {
+                errorDetails = "User with this email already exists";
+            }
+        }
+        return new ErrorInfo(req.getRequestURL(), errorType, errorDetails);
     }
 
     //  http://stackoverflow.com/a/22358422/548473
@@ -56,11 +70,6 @@ public class ExceptionInfoHandler {
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
     @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class, BindException.class})
     public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
-        if (e instanceof BindException) {
-            String validationErrors = getErrors(((BindException) e).getBindingResult());
-            log.warn("{} at request  {}: {}", VALIDATION_ERROR, req.getRequestURL(), getRootCause(e));
-            return new ErrorInfo(req.getRequestURL(), VALIDATION_ERROR, validationErrors);
-        }
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
 
