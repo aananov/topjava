@@ -19,9 +19,11 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
-import static ru.javawebinar.topjava.util.ValidationUtil.getErrors;
+import static ru.javawebinar.topjava.util.ValidationUtil.getErrorMessages;
 import static ru.javawebinar.topjava.util.ValidationUtil.getRootCause;
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -30,52 +32,55 @@ import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 public class ExceptionInfoHandler {
     private static Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
 
-    //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
-    private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
+
+    //  https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
+    private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException,
+                                                ErrorType errorType, String typeMessage, List<String> details) {
+
         Throwable rootCause = getRootCause(e);
-        String errorDetails = rootCause.toString();
         if (logException) {
-            log.error("{} at request  {}: {}", errorType, req.getRequestURL(), errorDetails);
+            log.error("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause);
         } else {
-            log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), errorDetails);
+            log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause);
         }
-        if (e instanceof BindException) {
-            errorDetails = getErrors(((BindException) e).getBindingResult());
-        }
-        if (e instanceof DataIntegrityViolationException) {
-            String message = Objects.requireNonNull(rootCause.getMessage()).toLowerCase();
-            if (message.contains("meals")) {
-                errorDetails = "You already have meal with this date/time";
-            }
-            if (message.contains("email")) {
-                errorDetails = "User with this email already exists";
-            }
-        }
-        return new ErrorInfo(req.getRequestURL(), errorType, errorDetails);
+        return new ErrorInfo(req.getRequestURL(), errorType, typeMessage, details);
     }
 
     //  http://stackoverflow.com/a/22358422/548473
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(NotFoundException.class)
     public ErrorInfo handleError(HttpServletRequest req, NotFoundException e) {
-        return logAndGetErrorInfo(req, e, false, DATA_NOT_FOUND);
+        return logAndGetErrorInfo(req, e, false, DATA_NOT_FOUND, "error.notFound", List.of(e.getMessage()));
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
-        return logAndGetErrorInfo(req, e, true, DATA_ERROR);
+        String message = Objects.requireNonNull(getRootCause(e).getMessage()).toLowerCase();
+        if (message.contains("meals")) {
+            return logAndGetErrorInfo(req, e, true, DATA_ERROR,
+                    "exception.duplicateDateTime", Collections.emptyList());
+        }
+        if (message.contains("email")) {
+            return logAndGetErrorInfo(req, e, true, DATA_ERROR,
+                    "exception.duplicateMail", Collections.emptyList());
+        }
+        return logAndGetErrorInfo(req, e, true, DATA_ERROR, "common.appError", Collections.emptyList());
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
     @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class, BindException.class})
     public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
-        return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
+        if (e instanceof BindException) {
+            return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR,
+                    "error.validation", getErrorMessages(((BindException) e).getBindingResult()));
+        }
+        return logAndGetErrorInfo(req, e, true, DATA_ERROR, "common.appError", Collections.emptyList());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ErrorInfo handleError(HttpServletRequest req, Exception e) {
-        return logAndGetErrorInfo(req, e, true, APP_ERROR);
+        return logAndGetErrorInfo(req, e, true, APP_ERROR, "common.appError", Collections.emptyList());
     }
 }

@@ -23,14 +23,19 @@ public class ProfileUIController extends AbstractUserController {
     }
 
     @PostMapping
-    public String updateProfile(@Valid UserTo userTo, BindingResult result, SessionStatus status) {
+    public String updateProfile(@Valid UserTo userTo, BindingResult result, SessionStatus status, ModelMap modelMap) {
         if (result.hasErrors()) {
             return "profile";
         } else {
-            super.update(userTo, SecurityUtil.authUserId());
-            SecurityUtil.get().setTo(userTo);
-            status.setComplete();
-            return "redirect:/meals";
+            try {
+                super.update(userTo, SecurityUtil.authUserId());
+                SecurityUtil.get().setTo(userTo);
+                status.setComplete();
+                return "redirect:/meals";
+            } catch (DataIntegrityViolationException e) {
+                registerIntegrityViolation(result, modelMap, false);
+                return "profile";
+            }
         }
     }
 
@@ -42,9 +47,9 @@ public class ProfileUIController extends AbstractUserController {
     }
 
     @PostMapping("/register")
-    public String saveRegister(@Valid UserTo userTo, BindingResult result, SessionStatus status, ModelMap model) {
+    public String saveRegister(@Valid UserTo userTo, BindingResult result, SessionStatus status, ModelMap modelMap) {
         if (result.hasErrors()) {
-            model.addAttribute("register", true);
+            modelMap.addAttribute("register", true);
             return "profile";
         } else {
             try {
@@ -52,10 +57,14 @@ public class ProfileUIController extends AbstractUserController {
                 status.setComplete();
                 return "redirect:/login?message=app.registered&username=" + userTo.getEmail();
             } catch (DataIntegrityViolationException e) {
-                model.addAttribute("register", true);
-                result.rejectValue("email", "exception.duplicateMail");
+                registerIntegrityViolation(result, modelMap, true);
                 return "profile";
             }
         }
+    }
+
+    private void registerIntegrityViolation(BindingResult result, ModelMap model, boolean register) {
+        model.addAttribute("register", register);
+        result.rejectValue("email", "exception.duplicateMail");
     }
 }

@@ -38,8 +38,8 @@
         </ul>
         <ul>
             <li class="nav-item dropdown">
-                <a class="dropdown-toggle nav-link mt-3 ml-n5 text-muted" data-toggle="dropdown"><c:out
-                        value="${pageContext.response.locale}"/></a>
+                <a class="dropdown-toggle nav-link mt-3 ml-n5 text-muted"
+                   data-toggle="dropdown">${pageContext.response.locale}</a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item"
                        href="${requestScope['javax.servlet.forward.request_uri']}?lang=en">English</a>
