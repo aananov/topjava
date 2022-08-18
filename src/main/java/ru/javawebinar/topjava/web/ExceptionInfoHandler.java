@@ -32,20 +32,6 @@ import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 public class ExceptionInfoHandler {
     private static Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
 
-
-    //  https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
-    private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException,
-                                                ErrorType errorType, String typeMessage, List<String> details) {
-
-        Throwable rootCause = getRootCause(e);
-        if (logException) {
-            log.error("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause);
-        } else {
-            log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause);
-        }
-        return new ErrorInfo(req.getRequestURL(), errorType, typeMessage, details);
-    }
-
     //  http://stackoverflow.com/a/22358422/548473
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(NotFoundException.class)
@@ -69,18 +55,34 @@ public class ExceptionInfoHandler {
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
-    @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class, BindException.class})
+    @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
     public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
-        if (e instanceof BindException) {
-            return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR,
-                    "error.validation", getErrorMessages(((BindException) e).getBindingResult()));
-        }
         return logAndGetErrorInfo(req, e, true, DATA_ERROR, "common.appError", Collections.emptyList());
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
+    @ExceptionHandler(BindException.class)
+    public ErrorInfo validationError(HttpServletRequest req, Exception e) {
+        return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR,
+                "error.validation", getErrorMessages(((BindException) e).getBindingResult()));
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ErrorInfo handleError(HttpServletRequest req, Exception e) {
         return logAndGetErrorInfo(req, e, true, APP_ERROR, "common.appError", Collections.emptyList());
+    }
+
+    //  https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
+    private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException,
+                                                ErrorType errorType, String typeMessage, List<String> details) {
+
+        Throwable rootCause = getRootCause(e);
+        if (logException) {
+            log.error("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause);
+        } else {
+            log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause);
+        }
+        return new ErrorInfo(req.getRequestURL(), errorType, typeMessage, details);
     }
 }
